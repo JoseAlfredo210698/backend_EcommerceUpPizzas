@@ -61,8 +61,10 @@ class OrderController {
                 });
             })
             .then((source) => {
+            console.log('ok')
+
                 return Stripe.charges.create({
-                    amount: requestPizza.total * 100,
+                    amount: parseFloat(parseFloat(requestPizza.total * 100).toFixed(2)),
                     currency: 'usd',
                     customer: source.customer,
                     description: "Compra de pizza" + namePizzas + " en Alfredito's Pizzas."
@@ -80,8 +82,10 @@ class OrderController {
                     result: err.Error || []
                 })
             });
+        console.log(stripeResponse)
 
         if (stripeResponse == 'succeeded') {
+            requestPizza.total = requestPizza.total / 100
             requestPizza.orders = JSON.stringify(requestPizza.orders)
             const order = await Order.create(requestPizza)
             return response.status(201).json({
